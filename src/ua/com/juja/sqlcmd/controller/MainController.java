@@ -1,8 +1,6 @@
 package ua.com.juja.sqlcmd.controller;
 
 import ua.com.juja.sqlcmd.model.DatabaseManager;
-import ua.com.juja.sqlcmd.model.JDBCDatabaseManager;
-import ua.com.juja.sqlcmd.view.Console;
 import ua.com.juja.sqlcmd.view.View;
 
 import java.util.Arrays;
@@ -11,13 +9,27 @@ import java.util.Arrays;
  * Created by Александр on 17.05.17.
  */
 public class MainController {
-    public static void main(String[] args) {
-        View view = new Console();
-        DatabaseManager manager = new JDBCDatabaseManager();
 
+    private View view;
+    private DatabaseManager manager;
+
+
+    public  MainController(View view, DatabaseManager manager) {
+        this.view = view;
+        this.manager = manager;
+
+    }
+
+    public void run() {
+        connectToDb();
+//
+//
+//
+    }
+    private void connectToDb() {
         view.write("Привет, юзер!");
+        view.write("Введи, пожалуйста, имя базы данных, имя пользователя и пароль в формате: database|username|password");
         while (true) {
-            view.write("Введи, пожалуйста, имя базы данных, имя пользователя и пароль в формате: database|username|password");
             String string = view.read();
             String[] data = string.split("\\|");
             String databaseName = data[0];
