@@ -1,5 +1,6 @@
 package ua.com.juja.sqlcmd.controller;
 
+import ua.com.juja.sqlcmd.model.DataSet;
 import ua.com.juja.sqlcmd.model.DatabaseManager;
 import ua.com.juja.sqlcmd.view.View;
 
@@ -22,10 +23,87 @@ public class MainController {
 
     public void run() {
         connectToDb();
+        while (true) {
+            view.write("Введи команду (или help для помощи):");
+            String command = view.read();
+            if (command.equals("list")) {
+                doList();
+            } else if (command.equals("help")) {
+                doHelp();
+            } else if (command.startsWith("find|")) {
+                doFind(command);
+            } else if (command.equals("exit")) {
+                view.write("Спасибо за работу! Пока!");
+                break;
+            } else {
+                view.write("Команда '" + command + "' не существует!");
+            }
+        }
 //
 //
 //
     }
+
+    private void doFind(String command) {
+        String[] data = command.split("\\|");
+        String tableName = data[1];
+
+        DataSet[] tableData = manager.getTableData(tableName);
+        String[] tableColumns = manager.getTableColumns(tableName);
+        printHeader(tableColumns);
+        printTable(tableData);
+
+    }
+
+    private void printTable(DataSet[] tableData) {
+
+        for (DataSet row : tableData) {
+            printRow(row);
+        }
+    }
+
+    private void printRow(DataSet row) {
+        Object[] values = row.getValues();
+        String result = "|";
+        for (Object value : values) {
+            result += value + "|";
+        }
+        view.write(result);
+    }
+
+    private void printHeader(String[] tableColumns) {
+        String result = "|";
+        for (String name : tableColumns) {
+            result += name + "|";
+        }
+        view.write("----------------------------");
+        view.write(result);
+        view.write("----------------------------");
+    }
+
+    private void doHelp() {
+        view.write("Существующие команды:");
+        view.write("\tlist");
+        view.write("\t\tдля получения списка всех таблиц текущей базы данных;");
+
+        view.write("\tfind|tableName");
+        view.write("\t\tдля получения содержимого таблицы 'tableName';");
+
+        view.write("\thelp");
+        view.write("\t\tдля вывода этого списка на экран;");
+
+        view.write("\texit");
+        view.write("\t\tдля выхода из программы;");
+    }
+
+    private void doList() {
+        String[] tableNames = manager.getTableNames();
+
+        String message = Arrays.toString(tableNames);
+
+        view.write(message);
+    }
+
     private void connectToDb() {
         view.write("Привет, юзер!");
         view.write("Введи, пожалуйста, имя базы данных, имя пользователя и пароль в формате: database|username|password");
