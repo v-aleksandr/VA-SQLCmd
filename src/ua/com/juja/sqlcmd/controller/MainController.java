@@ -20,7 +20,7 @@ public class MainController {
     public  MainController(View view, DatabaseManager manager) {
         this.view = view;
         this.manager = manager;
-        this.commands = new Command[] {new Exit(view)};
+        this.commands = new Command[] {new Exit(view), new Help(view)};
     }
 
     public void run() {
@@ -30,8 +30,8 @@ public class MainController {
             String command = view.read();
             if (command.equals("list")) {
                 doList();
-            } else if (command.equals("help")) {
-                doHelp();
+            } else if (commands[1].canProcess(command)) {
+                commands[1].process(command);
             } else if (command.startsWith("find|")) {
                 doFind(command);
             } else if (commands[0].canProcess(command)) {
@@ -82,22 +82,7 @@ public class MainController {
         view.write("----------------------------");
     }
 
-    private void doHelp() {
-        view.write("Существующие команды:");
-        view.write("\tlist");
-        view.write("\t\tдля получения списка всех таблиц базы, к которой подключились");
-
-        view.write("\tfind|tableName");
-        view.write("\t\tдля получения содержимого таблицы 'tableName'");
-
-        view.write("\thelp");
-        view.write("\t\tдля вывода этого списка на экран");
-
-        view.write("\texit");
-        view.write("\t\tдля выхода из программы");
-    }
-
-    private void doList() {
+        private void doList() {
         String[] tableNames = manager.getTableNames();
 
         String message = Arrays.toString(tableNames);
