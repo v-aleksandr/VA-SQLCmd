@@ -1,5 +1,6 @@
 package ua.com.juja.sqlcmd.controller;
 
+import ua.com.juja.sqlcmd.controller.command.*;
 import ua.com.juja.sqlcmd.model.DataSet;
 import ua.com.juja.sqlcmd.model.DatabaseManager;
 import ua.com.juja.sqlcmd.view.View;
@@ -11,6 +12,7 @@ import java.util.Arrays;
  */
 public class MainController {
 
+    private Command[] commands;
     private View view;
     private DatabaseManager manager;
 
@@ -18,7 +20,7 @@ public class MainController {
     public  MainController(View view, DatabaseManager manager) {
         this.view = view;
         this.manager = manager;
-
+        this.commands = new Command[] {new Exit(view)};
     }
 
     public void run() {
@@ -32,11 +34,10 @@ public class MainController {
                 doHelp();
             } else if (command.startsWith("find|")) {
                 doFind(command);
-            } else if (command.equals("exit")) {
-                view.write("Спасибо за работу! Пока!");
-                break;
+            } else if (commands[0].canProcess(command)) {
+                commands[0].process(command);
             } else {
-                view.write("Команда '" + command + "' не существует!");
+                view.write("Несуществующая команда: " + command);
             }
         }
 //
@@ -84,16 +85,16 @@ public class MainController {
     private void doHelp() {
         view.write("Существующие команды:");
         view.write("\tlist");
-        view.write("\t\tдля получения списка всех таблиц текущей базы данных;");
+        view.write("\t\tдля получения списка всех таблиц базы, к которой подключились");
 
         view.write("\tfind|tableName");
-        view.write("\t\tдля получения содержимого таблицы 'tableName';");
+        view.write("\t\tдля получения содержимого таблицы 'tableName'");
 
         view.write("\thelp");
-        view.write("\t\tдля вывода этого списка на экран;");
+        view.write("\t\tдля вывода этого списка на экран");
 
         view.write("\texit");
-        view.write("\t\tдля выхода из программы;");
+        view.write("\t\tдля выхода из программы");
     }
 
     private void doList() {
@@ -105,8 +106,8 @@ public class MainController {
     }
 
     private void connectToDb() {
-        view.write("Привет, юзер!");
-        view.write("Введи, пожалуйста, имя базы данных, имя пользователя и пароль в формате: database|username|password");
+        view.write("Привет юзер!");
+        view.write("Введи, пожалуйста имя базы данных, имя пользователя и пароль в формате: database|username|password");
         while (true) {
             try {
                 String string = view.read();

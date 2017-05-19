@@ -53,7 +53,7 @@ public class InMemoryDatabaseManager implements DatabaseManager {
     public void update(String tableName, int id, DataSet newvalue) {
         validateTable(tableName);
         for (int index = 0; index < freeIndex; index++) {
-            if ((int)data[index].get("id") == id) {
+            if((int)data[index].get("id") == id) {
                 data[index].updateFrom(newvalue);
             }
         }
