@@ -28,8 +28,12 @@ public class MainController {
     public void run() {
         view.write("Привет юзер!");
         view.write("Введи, пожалуйста имя базы данных, имя пользователя и пароль в формате: connect|database|username|password");
+
         while (true) {
             String input = view.read();
+            if (input == null) {
+                new Exit(view).process(input);
+            }
             for (Command command : commands) {
                 if (command.canProcess(input)) {
 //                    connectToDb();
