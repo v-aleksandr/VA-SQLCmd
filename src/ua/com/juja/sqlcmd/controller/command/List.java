@@ -17,6 +17,7 @@ public class List implements Command {
         this.manager = manager;
         this.view = view;
     }
+
     @Override
     public boolean canProcess(String command) {
         return command.equals("list");
