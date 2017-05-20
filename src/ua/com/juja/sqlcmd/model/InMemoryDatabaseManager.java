@@ -64,4 +64,9 @@ public class InMemoryDatabaseManager implements DatabaseManager {
     public String[] getTableColumns(String tableName) {
         return new String[] {"name", "password", "id"};
     }
+
+    @Override
+    public boolean isConnected() {
+        return true;
+    }
 }

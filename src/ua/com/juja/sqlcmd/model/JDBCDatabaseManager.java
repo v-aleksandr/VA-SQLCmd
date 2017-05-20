@@ -165,12 +165,6 @@ public class JDBCDatabaseManager implements DatabaseManager {
     public String[] getTableColumns(String tableName) {
         try {
             Statement stmt = connection.createStatement();
-            /*ResultSet rs = stmt.executeQuery("SELECT table_name " +
-                    "FROM information_schema.tables " +
-                    "WHERE table_schema='public' AND table_type='BASE TABLE'");*/
-            /*SELECT * FROM information_schema.columns
-            WHERE table_schema = 'your_schema'
-            AND table_name   = 'your_table'*/
             ResultSet rs = stmt.executeQuery("SELECT column_name FROM information_schema.columns WHERE table_name = '" + tableName + "'");
             String[] tables = new String[100];
             int index = 0;
@@ -185,5 +179,10 @@ public class JDBCDatabaseManager implements DatabaseManager {
             e.printStackTrace();
             return new String[0];
         }
+    }
+
+    @Override
+    public boolean isConnected() {
+        return connection != null;
     }
 }
