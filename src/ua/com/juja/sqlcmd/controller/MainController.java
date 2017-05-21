@@ -13,9 +13,9 @@ public class MainController {
     private View view;
 
 
-    public  MainController(View view, DatabaseManager manager) {
+    public MainController(View view, DatabaseManager manager) {
         this.view = view;
-        this.commands = new Command[] {
+        this.commands = new Command[]{
                 new Connect(manager, view),
                 new Help(view),
                 new Exit(view),
@@ -31,7 +31,7 @@ public class MainController {
         try {
             doWork();
             return;
-        }catch (ExitException e) {
+        } catch (ExitException e) {
             // do nothing
         }
     }
@@ -41,12 +41,18 @@ public class MainController {
         view.write("Введи, пожалуйста имя базы данных, имя пользователя и пароль в формате: connect|database|username|password");
         while (true) {
             String input = view.read();
-            if (input == null) {
-                new Exit(view).process(input);
-            }
+
             for (Command command : commands) {
-                if (command.canProcess(input)) {
-                    command.process(input);
+                try {
+                    if (command.canProcess(input)) {
+                        command.process(input);
+                        break;
+                    }
+                } catch (Exception e) {
+                    if (e instanceof ExitException) {
+                        throw e;
+                    }
+                    printError(e);
                     break;
                 }
             }
@@ -54,5 +60,14 @@ public class MainController {
         }
     }
 
+    private void printError(Exception e) {
+        String message = e.getMessage();
+        Throwable cause = e.getCause();
+        if (cause != null) {
+            message += " " + cause.getMessage();
+        }
+        view.write("Неудача! по причине: " + message);
+        view.write("Повтори попытку!");
+    }
 
 }

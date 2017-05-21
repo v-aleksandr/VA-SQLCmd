@@ -24,11 +24,13 @@ public class Create implements Command {
 
     @Override
     public void process(String command) {
-        try {
             String[] data = command.split("\\|");
             int count = data.length;
             if (count % 2 != 0) {
-                throw new IllegalArgumentException("Должно быть четное количество параметров в формате 'create|tableName|column1|value1|column2|value2|...columnN|valueN', а ты прислал " + count);
+                throw new IllegalArgumentException(String.format("Должно быть четное " +
+                        "количество параметров в формате " +
+                        "'create|tableName|column1|value1|column2|value2|...columnN|valueN', " +
+                        "а ты прислал '%s'", command));
             }
             String tableName = data[1];
             DataSet dataset = new DataSet();
@@ -38,11 +40,6 @@ public class Create implements Command {
                 dataset.put(columnName, columnValue);
             }
             manager.create(tableName, dataset);
-
             view.write(String.format("Запись %s была успешно создана в таблице '%s'.", dataset, tableName));
-        } catch (Exception e) {
-//            printError(e);
-        }
-
     }
 }

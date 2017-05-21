@@ -240,7 +240,6 @@ public class IntegrationTest {
 
     }
 
-
     @Test
     public void testFindAfterConnectWithData() {
 
@@ -269,6 +268,47 @@ public class IntegrationTest {
                 "|Stiven|*****|13|\r\n" +
                 "|Eva|+++++|14|\r\n" +
                 "----------------------------\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "До скорой встречи!\r\n", getData());
+
+    }
+
+    @Test
+    public void testClearWithError() {
+
+        in.add("connect|sqlcmd|postgres|postgres");
+        in.add("clear|sadfasd|fsf|fdsf");
+        in.add("exit");
+
+        Main.main(new String[0]);
+
+        assertEquals("Привет юзер!\r\n" +
+                "Введи, пожалуйста имя базы данных, имя пользователя и пароль в формате: connect|database|username|password\r\n" +
+                "Успех!\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Неудача! по причине: Формат команды 'clear|tableName', а ты ввел: clear|sadfasd|fsf|fdsf\r\n" +
+                "Повтори попытку!\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "До скорой встречи!\r\n", getData());
+
+    }
+
+
+    @Test
+    public void testCreateWithErrors() {
+
+        in.add("connect|sqlcmd|postgres|postgres");
+        in.add("create|user|error");
+        in.add("exit");
+
+        Main.main(new String[0]);
+
+        assertEquals("Привет юзер!\r\n" +
+                "Введи, пожалуйста имя базы данных, имя пользователя и пароль в формате: connect|database|username|password\r\n" +
+                "Успех!\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Неудача! по причине: Должно быть четное количество параметров в формате 'create|tableName|column1|value1|column2|value2|...columnN|valueN', а ты прислал 'create|user|error'\r\n" +
+                "Повтори попытку!\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
                 "До скорой встречи!\r\n", getData());
 
