@@ -26,9 +26,17 @@ public class MainController {
     }
 
     public void run() {
+        try {
+            doWork();
+            return;
+        }catch (ExitException e) {
+            // do nothing
+        }
+    }
+
+    private void doWork() {
         view.write("Привет юзер!");
         view.write("Введи, пожалуйста имя базы данных, имя пользователя и пароль в формате: connect|database|username|password");
-
         while (true) {
             String input = view.read();
             if (input == null) {
@@ -36,7 +44,6 @@ public class MainController {
             }
             for (Command command : commands) {
                 if (command.canProcess(input)) {
-//                    connectToDb();
                     command.process(input);
                     break;
                 }
