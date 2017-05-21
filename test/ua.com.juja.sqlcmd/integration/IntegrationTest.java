@@ -50,6 +50,10 @@ public class IntegrationTest {
                 "\t\tдля подключения к базе данных, с которой будем работать\r\n" +
                 "\tlist\r\n" +
                 "\t\tдля получения списка всех таблиц базы, к которой подключились\r\n" +
+                "\tclear|tableName\r\n" +
+                "\t\tдля очистки всей таблицы\r\n" +
+                "\tcreate|tableName|column1|value1|column2|value2|...columnN|valueN\r\n" +
+                "\t\tдля создания записи в таблице\r\n" +
                 "\tfind|tableName\r\n" +
                 "\t\tдля получения содержимого таблицы 'tableName'\r\n" +
                 "\thelp\r\n" +
@@ -184,6 +188,7 @@ public class IntegrationTest {
                 "----------------------------\r\n" +
                 "|name|password|id|\r\n" +
                 "----------------------------\r\n" +
+                "----------------------------\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
                 "До скорой встречи!\r\n", getData());
 
@@ -209,6 +214,61 @@ public class IntegrationTest {
                 "Успех!\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
                 "[qwe]\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "До скорой встречи!\r\n", getData());
+
+    }
+
+    @Test
+    public void testConnectWithError() {
+
+        in.add("connect|sqlcmd|");
+//        in.add("connect|sqlcmd|postgres|postgres");
+//        in.add("list");
+//        in.add("connect|test|postgres|postgres");
+//        in.add("list");
+        in.add("exit");
+
+        Main.main(new String[0]);
+
+        assertEquals("Привет юзер!\r\n" +
+                "Введи, пожалуйста имя базы данных, имя пользователя и пароль в формате: connect|database|username|password\r\n" +
+                "Неудача! по причине: Неверное количество параметров, разделенных знаком '|', ожидается 4, но есть: 2\r\n" +
+                "Повтори попытку!\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "До скорой встречи!\r\n", getData());
+
+    }
+
+
+    @Test
+    public void testFindAfterConnectWithData() {
+
+        in.add("connect|sqlcmd|postgres|postgres");
+        in.add("clear|user");
+        in.add("create|user|id|13|name|Stiven|password|*****");
+        in.add("create|user|id|14|name|Eva|password|+++++");
+        in.add("find|user");
+        in.add("exit");
+
+        Main.main(new String[0]);
+
+        assertEquals("Привет юзер!\r\n" +
+                "Введи, пожалуйста имя базы данных, имя пользователя и пароль в формате: connect|database|username|password\r\n" +
+                "Успех!\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Таблица user была успешно очищена.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Запись {names: [id, name, password], values: [13, Stiven, *****]} была успешно создана в таблице 'user'.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Запись {names: [id, name, password], values: [14, Eva, +++++]} была успешно создана в таблице 'user'.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "----------------------------\r\n" +
+                "|name|password|id|\r\n" +
+                "----------------------------\r\n" +
+                "|Stiven|*****|13|\r\n" +
+                "|Eva|+++++|14|\r\n" +
+                "----------------------------\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
                 "До скорой встречи!\r\n", getData());
 

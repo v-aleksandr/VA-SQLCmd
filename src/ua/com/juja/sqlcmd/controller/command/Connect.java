@@ -42,7 +42,6 @@ public class Connect implements Command {
         } catch (Exception e) {
             printError(e);
         }
-
     }
 
     private void printError(Exception e) {
@@ -51,7 +50,7 @@ public class Connect implements Command {
         if (cause != null) {
             message += " " + cause.getMessage();
         }
-        view.write("Неудача по причине: " + message);
+        view.write("Неудача! по причине: " + message);
         view.write("Повтори попытку!");
     }
 }
