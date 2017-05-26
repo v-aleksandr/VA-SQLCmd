@@ -25,7 +25,7 @@ public class ExitTestWithMockito {
     }
 
     @Test
-    public void testCanProcessQweString() {
+    public void testCantProcessQweString() {
         Command command = new Exit(view);
 
         boolean canProcess = command.canProcess("qwe");

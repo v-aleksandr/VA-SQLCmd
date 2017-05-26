@@ -23,7 +23,7 @@ public class ExitTest {
     }
 
     @Test
-    public void testCanProcessQweString() {
+    public void testCantProcessQweString() {
         Command command = new Exit(view);
 
         boolean canProcess = command.canProcess("qwe");

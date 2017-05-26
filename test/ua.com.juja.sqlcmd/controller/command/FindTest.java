@@ -68,7 +68,7 @@ public class FindTest {
     }
 
     @Test
-    public void testCanProcessQweString() {
+    public void testCantProcessQweString() {
         boolean canProcess = command.canProcess("qwe|user");
         assertFalse(canProcess);
     }

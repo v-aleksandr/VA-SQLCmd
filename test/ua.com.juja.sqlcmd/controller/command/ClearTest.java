@@ -47,8 +47,30 @@ public class ClearTest {
     }
 
     @Test
-    public void testCanProcessQweString() {
+    public void testValidationErrorWhenCountParametersIsLessThan2() {
+        try {
+            command.process("clear");
+            fail();
+        }catch (IllegalArgumentException e) {
+            assertEquals("Формат команды 'clear|tableName', а ты ввел: clear", e.getMessage());
+        }
+    }
+
+
+    @Test
+    public void testValidationErrorWhenCountParametersIsMoreThan2() {
+        try {
+            command.process("clear|user|more");
+            fail();
+        }catch (IllegalArgumentException e) {
+            assertEquals("Формат команды 'clear|tableName', а ты ввел: clear|user|more", e.getMessage());
+        }
+    }
+    @Test
+    public void testCantProcessQweString() {
         boolean canProcess = command.canProcess("qwe|user");
         assertFalse(canProcess);
     }
+
+
 }
