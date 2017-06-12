@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -39,10 +40,10 @@ public abstract class DatabaseManagerTest {
         input.put("password", "pass");
         input.put("id", "111");
         manager.create("user", input);
-        DataSet[] users = manager.getTableData("user");
-        assertEquals(1, users.length);
+        List<DataSet> users = manager.getTableData("user");
+        assertEquals(1, users.size());
 
-        DataSet user = users[0];
+        DataSet user = users.get(0);
         assertEquals("[name, password, id]",Arrays.toString(user.getNames()));
         assertEquals("[Stiven, pass, 111]",Arrays.toString(user.getValues()));
     }
@@ -60,10 +61,10 @@ public abstract class DatabaseManagerTest {
         newvalue.put("password", "pass2");
         manager.update("user", 111, newvalue);
 
-        DataSet[] users = manager.getTableData("user");
-        assertEquals(1, users.length);
+        List<DataSet> users = manager.getTableData("user");
+        assertEquals(1, users.size());
 
-        DataSet user = users[0];
+        DataSet user = users.get(0);
         assertEquals("[name, password, id]",Arrays.toString(user.getNames()));
         assertEquals("[Stiven, pass2, 111]",Arrays.toString(user.getValues()));
     }
@@ -71,9 +72,9 @@ public abstract class DatabaseManagerTest {
     @Test
     public void testGetColumnNames() {
         manager.clear("user");
-        String[] columnNames = manager.getTableColumns("user");
+        Set<String> columnNames = manager.getTableColumns("user");
 
-        assertEquals("[name, password, id]",Arrays.toString(columnNames));
+        assertEquals("[name, password, id]",columnNames.toString());
     }
 
     @Test
