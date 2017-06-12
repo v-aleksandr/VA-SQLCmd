@@ -1,12 +1,12 @@
 package ua.com.juja.sqlcmd.model;
 
+import java.util.Set;
+
 /**
  * Created by Александр on 15.05.17.
  */
 public interface DatabaseManager {
-    DataSet[] getTableData(String tableName);
-
-    String[] getTableNames();
+    boolean isConnected();
 
     void connect(String database, String userName, String password);
 
@@ -16,7 +16,9 @@ public interface DatabaseManager {
 
     void update(String tableName, int id, DataSet newvalue);
 
+    Set<String> getTableNames();
+
     String[] getTableColumns(String tableName);
 
-    boolean isConnected();
+    DataSet[] getTableData(String tableName);
 }
