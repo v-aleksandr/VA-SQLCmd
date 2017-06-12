@@ -11,6 +11,10 @@ import ua.com.juja.sqlcmd.model.DataSet;
 import ua.com.juja.sqlcmd.model.DatabaseManager;
 import ua.com.juja.sqlcmd.view.View;
 
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -31,7 +35,7 @@ public class FindTest {
 
     @Test
     public void testPrintTableData() {
-        when(manager.getTableColumns("user")).thenReturn(new String[] {"id", "name", "password"});
+        setupTableColumns("user", "id", "name", "password");
         DataSet user1 = new DataSet();
         user1.put("id",12);
         user1.put("name","Stiven");
@@ -40,8 +44,7 @@ public class FindTest {
         user2.put("id",13);
         user2.put("name","Eva");
         user2.put("password","++++++");
-        DataSet[] data = new DataSet[] {user1, user2};
-        when(manager.getTableData("user")).thenReturn(data);
+        when(manager.getTableData("user")).thenReturn(Arrays.asList(user1, user2));
         command.process("find|user");
 
         shouldPrint("[----------------------------, " +
@@ -75,9 +78,9 @@ public class FindTest {
 
     @Test
     public void testPrintEmptyTableData() {
-        when(manager.getTableColumns("user")).thenReturn(new String[] {"id", "name", "password"});
+        setupTableColumns("user", "id", "name", "password");
 
-        when(manager.getTableData("user")).thenReturn(new DataSet[0]);
+        when(manager.getTableData("user")).thenReturn(new LinkedList<DataSet>());
         command.process("find|user");
 
         shouldPrint("[----------------------------, " +
@@ -94,13 +97,12 @@ public class FindTest {
 
     @Test
     public void testPrintTableDataWithOneColumn() {
-        when(manager.getTableColumns("test")).thenReturn(new String[] {"id"});
+        setupTableColumns("test", "id");
         DataSet user1 = new DataSet();
         user1.put("id",12);
         DataSet user2 = new DataSet();
         user2.put("id",13);
-        DataSet[] data = new DataSet[] {user1, user2};
-        when(manager.getTableData("test")).thenReturn(data);
+        when(manager.getTableData("test")).thenReturn(Arrays.asList(user1, user2));
         command.process("find|test");
 
         shouldPrint("[----------------------------, " +
@@ -110,4 +112,9 @@ public class FindTest {
                 "|13|, " +
                 "----------------------------]");
     }
+    
+    private void setupTableColumns(String tableName, String... columns) {
+        when(manager.getTableColumns(tableName)).thenReturn(new LinkedHashSet<String>(Arrays.asList(columns)));
+    }
+    
 }

@@ -1,5 +1,6 @@
 package ua.com.juja.sqlcmd.model;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -20,5 +21,5 @@ public interface DatabaseManager {
 
     Set<String> getTableColumns(String tableName);
 
-    DataSet[] getTableData(String tableName);
+    List<DataSet> getTableData(String tableName);
 }

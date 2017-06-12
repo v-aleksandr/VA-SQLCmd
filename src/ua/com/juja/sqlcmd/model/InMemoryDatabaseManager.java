@@ -1,9 +1,6 @@
 package ua.com.juja.sqlcmd.model;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Александр on 15.05.17.
@@ -11,14 +8,12 @@ import java.util.Set;
 public class InMemoryDatabaseManager implements DatabaseManager {
 
     public static final String TABLE_NAME = "user"; //TODO implement multytable
-    private DataSet[] data = new DataSet[1000];
-    private int freeIndex = 0;
-
+    private LinkedList<DataSet> data = new LinkedList<DataSet>();
 
     @Override
-    public DataSet[] getTableData(String tableName) {
+    public List<DataSet> getTableData(String tableName) {
         validateTable(tableName);
-        return Arrays.copyOf(data, freeIndex);
+        return data;
     }
 
     private void validateTable(String tableName) {
@@ -40,32 +35,29 @@ public class InMemoryDatabaseManager implements DatabaseManager {
     @Override
     public void clear(String tableName) {
         validateTable(tableName);
-        data = new DataSet[1000];
-        freeIndex = 0;
+        data.clear();
     }
 
     @Override
     public void create(String tableName, DataSet input) {
         validateTable(tableName);
-        data[freeIndex] = input;
-        freeIndex++;
-
+        data.add(input);
     }
 
     @Override
     public void update(String tableName, int id, DataSet newvalue) {
         validateTable(tableName);
-        for (int index = 0; index < freeIndex; index++) {
-            if((int)data[index].get("id") == id) {
-                data[index].updateFrom(newvalue);
+        for (DataSet dataSet : data) {
+            if ((int) dataSet.get("id") == id) {
+                dataSet.updateFrom(newvalue);
             }
         }
 
     }
 
     @Override
-    public String[] getTableColumns(String tableName) {
-        return new String[] {"name", "password", "id"};
+    public Set<String> getTableColumns(String tableName) {
+        return new LinkedHashSet<String>(Arrays.asList("name", "password", "id"));
     }
 
     @Override

@@ -3,10 +3,7 @@ package ua.com.juja.sqlcmd.model;
 import org.postgresql.util.*;
 
 import java.sql.*;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Александр on 13.05.17.
@@ -47,17 +44,18 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public DataSet[] getTableData(String tableName) {
-        int size = getSize(tableName);
+    public List<DataSet> getTableData(String tableName) {
+        
+//        List<DataSet> result = new ArrayList<DataSet>(getSize(tableName));
+        List<DataSet> result = new LinkedList<DataSet>();
+        
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery("SELECT * FROM public." + tableName))
         {
             ResultSetMetaData rsmd = rs.getMetaData();
-            DataSet[] result = new DataSet[size];
-            int index = 0;
             while (rs.next()) {
                 DataSet dataSet = new DataSet();
-                result[index++] = dataSet;
+                result.add(dataSet);
                 for (int i = 1; i <= rsmd.getColumnCount(); i++) {
                     dataSet.put(rsmd.getColumnName(i), rs.getObject(i));
                 }
@@ -65,7 +63,7 @@ public class JDBCDatabaseManager implements DatabaseManager {
             return result;
         }catch (SQLException e) {
             e.printStackTrace();
-            return new DataSet[0];
+            return result;
         }
     }
 
@@ -158,21 +156,19 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
 
     @Override
-    public String[] getTableColumns(String tableName) {
+    public Set<String> getTableColumns(String tableName) {
+        Set<String> columnNames = new LinkedHashSet<String>();
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery("SELECT column_name FROM information_schema.columns WHERE table_name = '" +
                      tableName + "'"))
         {
-            String[] tables = new String[100];
-            int index = 0;
             while (rs.next()) {
-                tables[index++] = rs.getString("column_name");
+                columnNames.add(rs.getString("column_name"));
             }
-            tables = Arrays.copyOf(tables, index, String[].class);
-            return tables;
+            return columnNames;
         }catch (SQLException e) {
             e.printStackTrace();
-            return new String[0];
+            return columnNames;
         }
     }
 

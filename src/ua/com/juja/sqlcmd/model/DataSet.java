@@ -10,8 +10,8 @@ public class DataSet {
     static class Data {
 
         private String name;
-
         private Object value;
+
         public Data(String name, Object value) {
             this.name = name;
             this.value = value;
