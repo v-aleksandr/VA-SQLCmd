@@ -48,7 +48,7 @@ public class IntegrationTest {
                 "Существующие команды:\r\n" +
                 "\tconnect|databaseName|userName|password\r\n" +
                 "\t\tдля подключения к базе данных, с которой будем работать\r\n" +
-                "\tlist\r\n" +
+                "\ttables\r\n" +
                 "\t\tдля получения списка всех таблиц базы, к которой подключились\r\n" +
                 "\tclear|tableName\r\n" +
                 "\t\tдля очистки всей таблицы\r\n" +
@@ -90,14 +90,15 @@ public class IntegrationTest {
     @Test
     public void testListWithoutConnect() {
 
-        in.add("list");
+        in.add("tables");
         in.add("exit");
 
         Main.main(new String[0]);
 
         assertEquals("Привет юзер!\r\n" +
                 "Введи, пожалуйста имя базы данных, имя пользователя и пароль в формате: connect|database|username|password\r\n" +
-                "Вы не можете пользоваться командой 'list' пока не подключитесь с помощью команды connect|databaseName|userName|password\r\n" +
+                "Вы не можете пользоваться командой 'tables' пока не подключитесь с помощью команды " +
+                "connect|databaseName|userName|password\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
                 "До скорой встречи!\r\n", getData());
 
@@ -157,7 +158,7 @@ public class IntegrationTest {
     public void testListAfterConnect() {
 
         in.add("connect|sqlcmd|postgres|postgres");
-        in.add("list");
+        in.add("tables");
         in.add("exit");
 
         Main.main(new String[0]);
@@ -198,9 +199,9 @@ public class IntegrationTest {
     public void testConnectAfterConnect() {
 
         in.add("connect|sqlcmd|postgres|postgres");
-        in.add("list");
+        in.add("tables");
         in.add("connect|test|postgres|postgres");
-        in.add("list");
+        in.add("tables");
         in.add("exit");
 
         Main.main(new String[0]);
@@ -224,9 +225,9 @@ public class IntegrationTest {
 
         in.add("connect|sqlcmd|");
 //        in.add("connect|sqlcmd|postgres|postgres");
-//        in.add("list");
+//        in.add("tables");
 //        in.add("connect|test|postgres|postgres");
-//        in.add("list");
+//        in.add("tables");
         in.add("exit");
 
         Main.main(new String[0]);
