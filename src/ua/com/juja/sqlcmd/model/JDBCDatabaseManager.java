@@ -56,8 +56,8 @@ public class JDBCDatabaseManager implements DatabaseManager {
             while (rs.next()) {
                 DataSet dataSet = new DataSet();
                 result.add(dataSet);
-                for (int i = 1; i <= rsmd.getColumnCount(); i++) {
-                    dataSet.put(rsmd.getColumnName(i), rs.getObject(i));
+                for (int i = 0; i < rsmd.getColumnCount(); i++) {
+                    dataSet.put(rsmd.getColumnName(i + 1), rs.getObject(i + 1));
                 }
             }
             return result;
