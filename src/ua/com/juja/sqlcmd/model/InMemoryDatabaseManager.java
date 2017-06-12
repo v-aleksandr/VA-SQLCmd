@@ -8,7 +8,7 @@ import java.util.*;
 public class InMemoryDatabaseManager implements DatabaseManager {
 
     public static final String TABLE_NAME = "user"; //TODO implement multytable
-    private LinkedList<DataSet> data = new LinkedList<DataSet>();
+    private List<DataSet> data = new LinkedList<DataSet>();
 
     @Override
     public List<DataSet> getTableData(String tableName) {
