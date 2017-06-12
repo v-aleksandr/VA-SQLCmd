@@ -18,7 +18,7 @@ public interface DatabaseManager {
 
     Set<String> getTableNames();
 
-    String[] getTableColumns(String tableName);
+    Set<String> getTableColumns(String tableName);
 
     DataSet[] getTableData(String tableName);
 }
