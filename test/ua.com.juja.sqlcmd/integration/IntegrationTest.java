@@ -166,7 +166,7 @@ public class IntegrationTest {
                 "Введи, пожалуйста имя базы данных, имя пользователя и пароль в формате: connect|database|username|password\r\n" +
                 "Успех!\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
-                "[user]\r\n" +
+                "[user, test]\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
                 "До скорой встречи!\r\n", getData());
 
@@ -209,7 +209,7 @@ public class IntegrationTest {
                 "Введи, пожалуйста имя базы данных, имя пользователя и пароль в формате: connect|database|username|password\r\n" +
                 "Успех!\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
-                "[user]\r\n" +
+                "[user, test]\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
                 "Успех!\r\n" +
                 "Введи команду (или help для помощи):\r\n" +

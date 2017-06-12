@@ -7,13 +7,11 @@ import java.util.*;
  */
 public class InMemoryDatabaseManager implements DatabaseManager {
 
-    public static final String TABLE_NAME = "user"; //TODO implement multytable
-    private List<DataSet> data = new LinkedList<DataSet>();
-
+    private  Map<String, List<DataSet>> tables = new LinkedHashMap<>();
+    
     @Override
     public List<DataSet> getTableData(String tableName) {
-        validateTable(tableName);
-        return data;
+        return get(tableName);
     }
 
     private void validateTable(String tableName) {
@@ -24,7 +22,7 @@ public class InMemoryDatabaseManager implements DatabaseManager {
 
     @Override
     public Set<String> getTableNames() {
-        return new LinkedHashSet<String>(Arrays.asList(TABLE_NAME));
+        return tables.keySet();
     }
 
     @Override
@@ -34,20 +32,24 @@ public class InMemoryDatabaseManager implements DatabaseManager {
 
     @Override
     public void clear(String tableName) {
-        validateTable(tableName);
-        data.clear();
+        get(tableName).clear();
     }
-
+    
+    private List<DataSet> get(String tableName) {
+        if (!tables.containsKey(tableName)) {
+            tables.put(tableName, new LinkedList<DataSet>());
+        }
+        return tables.get(tableName);
+    }
+    
     @Override
     public void create(String tableName, DataSet input) {
-        validateTable(tableName);
-        data.add(input);
+        get(tableName).add(input);
     }
 
     @Override
     public void update(String tableName, int id, DataSet newvalue) {
-        validateTable(tableName);
-        for (DataSet dataSet : data) {
+        for (DataSet dataSet : get(tableName)) {
             if ((int) dataSet.get("id") == id) {
                 dataSet.updateFrom(newvalue);
             }
@@ -62,7 +64,7 @@ public class InMemoryDatabaseManager implements DatabaseManager {
     
     @Override
     public int getSize(String tableName) {
-        return data.size();
+        return get(tableName).size();
     }
     
     @Override
