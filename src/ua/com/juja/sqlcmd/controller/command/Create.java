@@ -1,6 +1,7 @@
 package ua.com.juja.sqlcmd.controller.command;
 
 import ua.com.juja.sqlcmd.model.DataSet;
+import ua.com.juja.sqlcmd.model.DataSetImpl;
 import ua.com.juja.sqlcmd.model.DatabaseManager;
 import ua.com.juja.sqlcmd.view.View;
 
@@ -33,7 +34,7 @@ public class Create implements Command {
                         "а ты прислал '%s'", command));
             }
             String tableName = data[1];
-            DataSet dataset = new DataSet();
+            DataSet dataset = new DataSetImpl();
             for (int index = 1; index < (count / 2); index++) {
                 String columnName = data[index * 2];
                 String columnValue = data[index * 2 + 1];
