@@ -4,19 +4,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import ua.com.juja.sqlcmd.model.DataSet;
 import ua.com.juja.sqlcmd.model.DataSetImpl;
 import ua.com.juja.sqlcmd.model.DatabaseManager;
 import ua.com.juja.sqlcmd.view.View;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Александр on 26.05.17.
@@ -81,7 +79,7 @@ public class FindTest {
     public void testPrintEmptyTableData() {
         setupTableColumns("user", "id", "name", "password");
 
-        when(manager.getTableData("user")).thenReturn(new LinkedList<DataSet>());
+        when(manager.getTableData("user")).thenReturn(new ArrayList<DataSet>());
         command.process("find|user");
 
         shouldPrint("[----------------------------, " +
@@ -118,4 +116,13 @@ public class FindTest {
         when(manager.getTableColumns(tableName)).thenReturn(new LinkedHashSet<String>(Arrays.asList(columns)));
     }
     
+    @Test
+    public void testErrorWhenBadCommandFormat() {
+        try {
+            command.process("find|user|sgf");
+            fail("Expected exception!");
+        }catch (IllegalArgumentException e) {
+            assertEquals("Формат команды 'find|tableName', а ты ввел: find|user|sgf", e.getMessage());
+        }
+    }
 }
