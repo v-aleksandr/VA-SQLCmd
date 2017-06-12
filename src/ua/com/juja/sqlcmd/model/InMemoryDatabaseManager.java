@@ -59,7 +59,12 @@ public class InMemoryDatabaseManager implements DatabaseManager {
     public Set<String> getTableColumns(String tableName) {
         return new LinkedHashSet<String>(Arrays.asList("name", "password", "id"));
     }
-
+    
+    @Override
+    public int getSize(String tableName) {
+        return data.size();
+    }
+    
     @Override
     public boolean isConnected() {
         return true;

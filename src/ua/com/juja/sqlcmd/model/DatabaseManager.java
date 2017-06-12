@@ -20,6 +20,8 @@ public interface DatabaseManager {
     Set<String> getTableNames();
 
     Set<String> getTableColumns(String tableName);
-
+    
+    int getSize(String tableName);
+    
     List<DataSet> getTableData(String tableName);
 }

@@ -11,8 +11,9 @@ import java.util.*;
 public class JDBCDatabaseManager implements DatabaseManager {
 
     private Connection connection;
-
-    private int getSize(String tableName) {
+    
+    @Override
+    public int getSize(String tableName) {
         try (Statement stmt = connection.createStatement();
              ResultSet rsCount = stmt.executeQuery("SELECT COUNT(*) FROM public." + tableName))
         {
