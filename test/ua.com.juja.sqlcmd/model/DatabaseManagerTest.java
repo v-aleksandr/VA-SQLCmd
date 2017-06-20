@@ -3,7 +3,6 @@ package ua.com.juja.sqlcmd.model;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -42,7 +41,7 @@ public abstract class DatabaseManagerTest {
         input.put("name", "Stiven");
         input.put("password", "pass");
         input.put("id", "111");
-        manager.create("user", input);
+        manager.insert("user", input);
         List<DataSet> users = manager.getTableData("user");
         assertEquals(1, users.size());
 
@@ -58,7 +57,7 @@ public abstract class DatabaseManagerTest {
         input.put("name", "Stiven");
         input.put("password", "pass");
         input.put("id", 111);
-        manager.create("user", input);
+        manager.insert("user", input);
 
         DataSet newvalue = new DataSetImpl();
         newvalue.put("password", "pass2");

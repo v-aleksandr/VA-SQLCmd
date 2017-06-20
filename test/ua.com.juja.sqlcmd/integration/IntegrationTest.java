@@ -52,7 +52,7 @@ public class IntegrationTest {
                 "\t\tдля получения списка всех таблиц базы, к которой подключились\r\n" +
                 "\tclear|tableName\r\n" +
                 "\t\tдля очистки всей таблицы\r\n" +
-                "\tcreate|tableName|column1|value1|column2|value2|...columnN|valueN\r\n" +
+                "\tinsert|tableName|column1|value1|column2|value2|...columnN|valueN\r\n" +
                 "\t\tдля создания записи в таблице\r\n" +
                 "\tfind|tableName\r\n" +
                 "\t\tдля получения содержимого таблицы 'tableName'\r\n" +
@@ -246,8 +246,8 @@ public class IntegrationTest {
 
         in.add("connect|sqlcmd|postgres|postgres");
         in.add("clear|user");
-        in.add("create|user|id|13|name|Stiven|password|*****");
-        in.add("create|user|id|14|name|Eva|password|+++++");
+        in.add("insert|user|id|13|name|Stiven|password|*****");
+        in.add("insert|user|id|14|name|Eva|password|+++++");
         in.add("find|user");
         in.add("exit");
 
@@ -299,7 +299,7 @@ public class IntegrationTest {
     public void testCreateWithErrors() {
 
         in.add("connect|sqlcmd|postgres|postgres");
-        in.add("create|user|error");
+        in.add("insert|user|error");
         in.add("exit");
 
         Main.main(new String[0]);
@@ -308,7 +308,7 @@ public class IntegrationTest {
                 "Введи, пожалуйста имя базы данных, имя пользователя и пароль в формате: connect|database|username|password\r\n" +
                 "Успех!\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
-                "Неудача! по причине: Должно быть четное количество параметров в формате 'create|tableName|column1|value1|column2|value2|...columnN|valueN', а ты прислал 'create|user|error'\r\n" +
+                "Неудача! по причине: Должно быть четное количество параметров в формате 'insert|tableName|column1|value1|column2|value2|...columnN|valueN', а ты прислал 'insert|user|error'\r\n" +
                 "Повтори попытку!\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
                 "До скорой встречи!\r\n", getData());

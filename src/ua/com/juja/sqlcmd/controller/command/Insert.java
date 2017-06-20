@@ -8,19 +8,19 @@ import ua.com.juja.sqlcmd.view.View;
 /**
  * Created by Александр on 21.05.17.
  */
-public class Create implements Command {
+public class Insert implements Command {
 
     private DatabaseManager manager;
     private View view;
 
-    public Create(DatabaseManager manager, View view) {
+    public Insert(DatabaseManager manager, View view) {
         this.manager = manager;
         this.view = view;
     }
 
     @Override
     public boolean canProcess(String command) {
-        return command.startsWith("create|");
+        return command.startsWith("insert|");
     }
 
     @Override
@@ -30,7 +30,7 @@ public class Create implements Command {
             if (count % 2 != 0) {
                 throw new IllegalArgumentException(String.format("Должно быть четное " +
                         "количество параметров в формате " +
-                        "'create|tableName|column1|value1|column2|value2|...columnN|valueN', " +
+                        "'insert|tableName|column1|value1|column2|value2|...columnN|valueN', " +
                         "а ты прислал '%s'", command));
             }
             String tableName = data[1];
@@ -40,7 +40,7 @@ public class Create implements Command {
                 String columnValue = data[index * 2 + 1];
                 dataset.put(columnName, columnValue);
             }
-            manager.create(tableName, dataset);
+            manager.insert(tableName, dataset);
             view.write(String.format("Запись %s была успешно создана в таблице '%s'.", dataset, tableName));
     }
 }
