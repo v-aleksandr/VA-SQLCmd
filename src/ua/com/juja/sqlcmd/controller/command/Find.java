@@ -32,38 +32,97 @@ public class Find implements Command {
             throw new IllegalArgumentException("Формат команды 'find|tableName', а ты ввел: " + command);
         }
         String tableName = data[1];
-
+    
         List<DataSet> tableData = manager.getTableData(tableName);
-        Set<String> tableColumns = manager.getTableColumns(tableName);
+        DataSet tableColumns = manager.getTableColumns(tableName);
+        synchronizeColumnsWidths(tableColumns, tableData);
         printHeader(tableColumns);
-        printTable(tableData);
+        printTable(tableData, tableColumns);
+        printFooter(tableColumns);
     }
-
-    private void printTable(List<DataSet> tableData) {
+    
+    private void synchronizeColumnsWidths(DataSet tableColumns, List<DataSet> tableData) {
+        if (tableData.size() != 0) {
+            for (DataSet rowTableData : tableData) {
+                for (String name : rowTableData.getNames()) {
+                    int rowColumnSpaces = rowTableData.get(name).toString().length();
+                    int columnSpaces = (int) tableColumns.get(name);
+                    if (rowColumnSpaces > columnSpaces) {
+                        tableColumns.put(name, rowColumnSpaces);
+                    }
+                }
+            }
+        }
+    }
+    
+    private void printTable(List<DataSet> tableData, DataSet tableColumns) {
 
         for (DataSet row : tableData) {
-            printRow(row);
+            String result = "│";
+            for (String columnName : row.getNames()) {
+                int countSpaces = (int) tableColumns.get(columnName);
+                result = wrapInSpaces(result, row.get(columnName).toString(), countSpaces) + "│";
+            }
+//            List<Object> values = row.getValues();
+//            for (Object value : values) {
+//                result += value ;
+//            }
+            view.write(result);
         }
-        view.write("----------------------------");
     }
 
     private void printRow(DataSet row) {
-        List<Object> values = row.getValues();
-        String result = "|";
-        for (Object value : values) {
-            result += value + "|";
-        }
-        view.write(result);
+    
     }
 
-    private void printHeader(Set<String> tableColumns) {
-        String result = "|";
-        for (String name : tableColumns) {
-            result += name + "|";
+    private void printHeader(DataSet tableColumns) {
+        String result = "│";
+        String lineBefore = "┌";
+        String lineAfter = "├";
+        for (String name : tableColumns.getNames()) {
+            int countSpaces = (int) tableColumns.get(name);
+            result = wrapInSpaces(result, name, countSpaces);
+            for (int i = 0; i < countSpaces; i++) {
+                lineBefore += "─";
+                lineAfter += "─";
+            }
+            result += "│";
+            lineBefore += "┬";
+            lineAfter += "┼";
         }
-        view.write("----------------------------");
+        lineBefore = lineBefore.substring(0,lineBefore.length()-1).concat("┐");
+        lineAfter = lineAfter.substring(0,lineAfter.length()-1).concat("┤");
+//        view.write(" ┌─┐┬┼┴└┘│┤├ ");
+        view.write(lineBefore);
         view.write(result);
-        view.write("----------------------------");
+        view.write(lineAfter);
+    }
+    
+    private String wrapInSpaces(String result, String name, int countSpaces) {
+        int countRightSpaces = (countSpaces - name.length()) / 2;
+        int countLeftSpaces = countSpaces - name.length() - countRightSpaces;
+        for (int i = 0; i < countLeftSpaces; i++) {
+            result += " ";
+        }
+        result += name;
+        for (int i = 0; i < countRightSpaces; i++) {
+            result += " ";
+        }
+        return result;
+    }
+    
+    private void printFooter(DataSet tableColumns) {
+        String lineAfter = "└";
+        for (String name : tableColumns.getNames()) {
+            int countSpaces = (int) tableColumns.get(name);
+            for (int i = 0; i < countSpaces; i++) {
+                lineAfter += "─";
+            }
+            lineAfter += "┴";
+        }
+        lineAfter = lineAfter.substring(0,lineAfter.length()-1).concat("┘");
+//        view.write(" ┌─┐┬┼┴└┘│┤├ ");
+        view.write(lineAfter);
     }
 }
 

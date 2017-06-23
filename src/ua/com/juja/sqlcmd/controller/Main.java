@@ -20,9 +20,11 @@ public class Main {
                 new Exit(view),
                 new IsConnected(manager, view),
                 new Tables(manager, view),
+                new Create(manager, view),
                 new Clear(manager, view),
                 new Insert(manager, view),
                 new Find(manager, view),
+                new Drop(manager, view),
                 new Unsupported(view)});
         controller.run();
     }

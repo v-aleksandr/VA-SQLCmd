@@ -14,7 +14,7 @@ public class Update implements Command {
     }
     @Override
     public boolean canProcess(String command) {
-        return command.startsWith("update");
+        return command.startsWith("update|");
     }
 
     @Override

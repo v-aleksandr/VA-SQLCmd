@@ -7,13 +7,18 @@ import java.util.*;
  */
 public class InMemoryDatabaseManager implements DatabaseManager {
 
-    private  Map<String, List<DataSet>> tables = new LinkedHashMap<>();
+    private Map<String, List<DataSet>> tables = new LinkedHashMap<>();
     
     @Override
     public List<DataSet> getTableData(String tableName) {
         return get(tableName);
     }
-
+    
+    @Override
+    public void drop(String tableName) {
+        tables.remove(tableName);
+    }
+    
     private void validateTable(String tableName) {
         if(!"user".equals(tableName)) {
             throw new UnsupportedOperationException("Only for 'user' table, but you try to work with:" + tableName);
@@ -35,6 +40,13 @@ public class InMemoryDatabaseManager implements DatabaseManager {
         get(tableName).clear();
     }
     
+    @Override
+    public void create(String tableName, DataSet input) {
+        if (!tables.containsKey(tableName)) {
+            tables.put(tableName, new LinkedList<DataSet>());
+        }
+    }
+    
     private List<DataSet> get(String tableName) {
         if (!tables.containsKey(tableName)) {
             tables.put(tableName, new LinkedList<DataSet>());
@@ -44,6 +56,11 @@ public class InMemoryDatabaseManager implements DatabaseManager {
     
     @Override
     public void insert(String tableName, DataSet input) {
+//        DataSet dataSet = new DataSetImpl();
+//        dataSet.put("name", 6);
+//        dataSet.put("password", 8);
+//        dataSet.put("id", 3);
+//        get(tableName).add(dataSet);
         get(tableName).add(input);
     }
 
@@ -54,12 +71,24 @@ public class InMemoryDatabaseManager implements DatabaseManager {
                 dataSet.updateFrom(newvalue);
             }
         }
-
     }
 
     @Override
-    public Set<String> getTableColumns(String tableName) {
-        return new LinkedHashSet<String>(Arrays.asList("name", "password", "id"));
+    public DataSet getTableColumns(String tableName) {
+        DataSet dataSet = new DataSetImpl();
+        switch (tableName) {
+            case "user" :
+                dataSet.put("name", 4);
+                dataSet.put("password", 8);
+                dataSet.put("id", 2);
+                break;
+            case "tuser" :
+                dataSet.put("fname", 5);
+                break;
+            default:
+                break;
+        }
+        return dataSet;
     }
     
     @Override

@@ -72,13 +72,25 @@ public abstract class DatabaseManagerTest {
     }
 
     @Test
-    public void testGetColumnNames() {
+    public void testGetColumnNamesFromUser() {
         manager.clear("user");
-        Set<String> columnNames = manager.getTableColumns("user");
+        DataSet columnNames = manager.getTableColumns("user");
 
-        assertEquals("[name, password, id]",columnNames.toString());
+        assertEquals("[name, password, id]",columnNames.getNames().toString());
     }
-
+    @Test
+    public void testGetColumnNamesFromTuser() {
+//        manager.clear("tuser");
+        String tableName = "tuser";
+        DataSet input = new DataSetImpl();
+        input.put("fname", "text");
+        manager.create(tableName, input);
+    
+        DataSet columnNames = manager.getTableColumns(tableName);
+        manager.drop(tableName);
+        
+        assertEquals("[fname]",columnNames.getNames().toString());
+    }
     @Test
     public void testIsConnected() {
         assertTrue(manager.isConnected());

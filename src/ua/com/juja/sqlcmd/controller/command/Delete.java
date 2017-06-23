@@ -14,7 +14,7 @@ public class Delete implements Command {
     }
     @Override
     public boolean canProcess(String command) {
-        return command.startsWith("delete");
+        return command.startsWith("delete|");
     }
 
     @Override

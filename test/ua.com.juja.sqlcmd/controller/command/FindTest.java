@@ -46,12 +46,12 @@ public class FindTest {
         when(manager.getTableData("user")).thenReturn(Arrays.asList(user1, user2));
         command.process("find|user");
 
-        shouldPrint("[----------------------------, " +
-                "|id|name|password|, " +
-                "----------------------------, " +
-                "|12|Stiven|******|, " +
-                "|13|Eva|++++++|, " +
-                "----------------------------]");
+        shouldPrint("[┌──┬──────┬────────┐, " +
+                "│id│ name │password│, " +
+                "├──┼──────┼────────┤, " +
+                "│12│Stiven│ ****** │, " +
+                "│13│  Eva │ ++++++ │, " +
+                "└──┴──────┴────────┘]");
     }
 
     @Test
@@ -82,10 +82,10 @@ public class FindTest {
         when(manager.getTableData("user")).thenReturn(new ArrayList<DataSet>());
         command.process("find|user");
 
-        shouldPrint("[----------------------------, " +
-                "|id|name|password|, " +
-                "----------------------------, " +
-                "----------------------------]");
+        shouldPrint("[┌──┬────┬────────┐, " +
+                "│id│name│password│, " +
+                "├──┼────┼────────┤, " +
+                "└──┴────┴────────┘]");
     }
 
     private void shouldPrint(String expected) {
@@ -104,16 +104,20 @@ public class FindTest {
         when(manager.getTableData("test")).thenReturn(Arrays.asList(user1, user2));
         command.process("find|test");
 
-        shouldPrint("[----------------------------, " +
-                "|id|, " +
-                "----------------------------, " +
-                "|12|, " +
-                "|13|, " +
-                "----------------------------]");
+        shouldPrint("[┌──┐, " +
+                "│id│, " +
+                "├──┤, " +
+                "│12│, " +
+                "│13│, " +
+                "└──┘]");
     }
     
     private void setupTableColumns(String tableName, String... columns) {
-        when(manager.getTableColumns(tableName)).thenReturn(new LinkedHashSet<String>(Arrays.asList(columns)));
+        DataSet dataSet = new DataSetImpl();
+        for (String name : columns) {
+            dataSet.put(name, name.length());
+        }
+        when(manager.getTableColumns(tableName)).thenReturn(dataSet);
     }
     
     @Test
