@@ -27,18 +27,20 @@ public class Create implements Command {
     public void process(String command) {
             String[] data = command.split("\\|");
             int count = data.length;
-            if (count < 3) {
-                throw new IllegalArgumentException(String.format("Должно быть как минимум 3 параметра в формате " +
-                        "'create|tableName|column1|column2|...|columnN', " +
+            if ((count < 4) || (count % 2 != 0)) {
+                throw new IllegalArgumentException(String.format("Должно быть четное количество параметров не менее " +
+                        "4-х в формате 'create|tableName|column1|type1|column2|type2|...|columnN|typeN', " +
                         "а ты прислал '%s'", command));
             }
             String tableName = data[1];
 
-            DataSet dataset = new DataSetImpl();
-            for (int index = 2; index < count; index++) {
-                dataset.put(data[index], "text");
+            DataSet tableStructure = new DataSetImpl();
+            for (int index = 1; index < count / 2; index++) {
+                String columnName = data[index * 2];
+                String columnType = data[index * 2 + 1];
+                tableStructure.put(columnName, columnType);
             }
-            manager.create(tableName, dataset);
-            view.write(String.format("Таблица '%s' с полями %s была успешно создана.", tableName, dataset));
+            manager.create(tableName, tableStructure);
+            view.write(String.format("Таблица '%s' с полями %s была успешно создана.", tableName, tableStructure));
     }
 }

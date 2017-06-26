@@ -11,20 +11,20 @@ import java.util.Set;
  * Created by Александр on 19.05.17.
  */
 public class Find implements Command {
-
+    
     private DatabaseManager manager;
     private View view;
-
+    
     public Find(DatabaseManager manager, View view) {
-            this.manager = manager;
-            this.view = view;
-        }
-
+        this.manager = manager;
+        this.view = view;
+    }
+    
     @Override
     public boolean canProcess(String command) {
         return command.startsWith("find|");
     }
-
+    
     @Override
     public void process(String command) {
         String[] data = command.split("\\|");
@@ -32,7 +32,7 @@ public class Find implements Command {
             throw new IllegalArgumentException("Формат команды 'find|tableName', а ты ввел: " + command);
         }
         String tableName = data[1];
-    
+        
         List<DataSet> tableData = manager.getTableData(tableName);
         DataSet tableColumns = manager.getTableColumns(tableName);
         synchronizeColumnsWidths(tableColumns, tableData);
@@ -42,6 +42,9 @@ public class Find implements Command {
     }
     
     private void synchronizeColumnsWidths(DataSet tableColumns, List<DataSet> tableData) {
+        for (String name : tableColumns.getNames()) {
+            tableColumns.put(name, name.length());
+        }
         if (tableData.size() != 0) {
             for (DataSet rowTableData : tableData) {
                 for (String name : rowTableData.getNames()) {
@@ -55,26 +58,6 @@ public class Find implements Command {
         }
     }
     
-    private void printTable(List<DataSet> tableData, DataSet tableColumns) {
-
-        for (DataSet row : tableData) {
-            String result = "│";
-            for (String columnName : row.getNames()) {
-                int countSpaces = (int) tableColumns.get(columnName);
-                result = wrapInSpaces(result, row.get(columnName).toString(), countSpaces) + "│";
-            }
-//            List<Object> values = row.getValues();
-//            for (Object value : values) {
-//                result += value ;
-//            }
-            view.write(result);
-        }
-    }
-
-    private void printRow(DataSet row) {
-    
-    }
-
     private void printHeader(DataSet tableColumns) {
         String result = "│";
         String lineBefore = "┌";
@@ -90,11 +73,40 @@ public class Find implements Command {
             lineBefore += "┬";
             lineAfter += "┼";
         }
-        lineBefore = lineBefore.substring(0,lineBefore.length()-1).concat("┐");
-        lineAfter = lineAfter.substring(0,lineAfter.length()-1).concat("┤");
+        lineBefore = lineBefore.substring(0, lineBefore.length() - 1).concat("┐");
+        lineAfter = lineAfter.substring(0, lineAfter.length() - 1).concat("┤");
 //        view.write(" ┌─┐┬┼┴└┘│┤├ ");
         view.write(lineBefore);
         view.write(result);
+        view.write(lineAfter);
+    }
+    
+    private void printTable(List<DataSet> tableData, DataSet tableColumns) {
+        
+        for (DataSet row : tableData) {
+            String result = "│";
+            for (String columnName : row.getNames()) {
+                int countSpaces = (int) tableColumns.get(columnName);
+                result = wrapInSpaces(result, row.get(columnName).toString(), countSpaces) + "│";
+            }
+//            List<Object> values = row.getValues();
+//            for (Object value : values) {
+//                result += value ;
+//            }
+            view.write(result);
+        }
+    }
+    
+    private void printFooter(DataSet tableColumns) {
+        String lineAfter = "└";
+        for (String name : tableColumns.getNames()) {
+            int countSpaces = (int) tableColumns.get(name);
+            for (int i = 0; i < countSpaces; i++) {
+                lineAfter += "─";
+            }
+            lineAfter += "┴";
+        }
+        lineAfter = lineAfter.substring(0, lineAfter.length() - 1).concat("┘");
         view.write(lineAfter);
     }
     
@@ -109,20 +121,6 @@ public class Find implements Command {
             result += " ";
         }
         return result;
-    }
-    
-    private void printFooter(DataSet tableColumns) {
-        String lineAfter = "└";
-        for (String name : tableColumns.getNames()) {
-            int countSpaces = (int) tableColumns.get(name);
-            for (int i = 0; i < countSpaces; i++) {
-                lineAfter += "─";
-            }
-            lineAfter += "┴";
-        }
-        lineAfter = lineAfter.substring(0,lineAfter.length()-1).concat("┘");
-//        view.write(" ┌─┐┬┼┴└┘│┤├ ");
-        view.write(lineAfter);
     }
 }
 

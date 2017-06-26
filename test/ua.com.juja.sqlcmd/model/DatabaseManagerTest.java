@@ -61,7 +61,9 @@ public abstract class DatabaseManagerTest {
 
         DataSet newvalue = new DataSetImpl();
         newvalue.put("password", "pass2");
-        manager.update("user", 111, newvalue);
+        DataSet condition = new DataSetImpl();
+        condition.put("id", 111);
+        manager.update("user", condition, newvalue);
 
         List<DataSet> users = manager.getTableData("user");
         assertEquals(1, users.size());
@@ -94,6 +96,25 @@ public abstract class DatabaseManagerTest {
     @Test
     public void testIsConnected() {
         assertTrue(manager.isConnected());
+    }
+    
+    @Test
+    public void testGetTableSize() {
+        manager.clear("user");
+        assertEquals(0, manager.getSize("user"));
+        
+        DataSet input = new DataSetImpl();
+        input.put("name", "Stiven");
+        input.put("password", "pass");
+        input.put("id", 111);
+        manager.insert("user", input);
+        assertEquals(1, manager.getSize("user"));
+        
+        input.put("name", "Eva");
+        input.put("password", "zzzz");
+        input.put("id", 112);
+        manager.insert("user", input);
+        assertEquals(2, manager.getSize("user"));
     }
 
 }

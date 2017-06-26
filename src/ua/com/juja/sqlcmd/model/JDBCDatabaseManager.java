@@ -60,38 +60,20 @@ public class JDBCDatabaseManager implements DatabaseManager {
     
     @Override
     public void create(String tableName, DataSet columnNames) {
-        String string = "";
-        for (String name : columnNames.getNames()) {
-            string += name + " " + columnNames.get(name) + ", ";
+        String columnsList = "";
+        for (String columnName : columnNames.getNames()) {
+            columnsList += columnName + " " + columnNames.get(columnName) + ", ";
         }
-        string = string.substring(0, string.length() - 2);
+        columnsList = columnsList.substring(0, columnsList.length() - 2);
         
         try (Statement stmt = connection.createStatement()) {
 //            Also we can create table without setting ownership
 //            stmt.executeUpdate("CREATE TABLE public." + tableName + " ( " + string + " ) WITH ( OIDS=FALSE )");
-            stmt.executeUpdate("CREATE TABLE public." + tableName + " ( " + string + " ) WITH ( OIDS=FALSE );" +
+            stmt.executeUpdate("CREATE TABLE public." + tableName + " ( " + columnsList + " ) WITH ( OIDS=FALSE );" +
                     "ALTER TABLE public." + tableName + " OWNER TO " + logonName);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-    
-    private String getNamesFormatted(DataSet newvalue, String format) {
-        String string = "";
-        for (String name : newvalue.getNames()) {
-            string += String.format(format, name);
-        }
-        string = string.substring(0, string.length() - 1);
-        return string;
-    }
-    
-    private String getValuesFormatted(DataSet input, String format) {
-        String values = "";
-        for (Object value : input.getValues()) {
-            values += String.format(format, value);
-        }
-        values = values.substring(0, values.length() - 1);
-        return values;
     }
     
     @Override
@@ -107,17 +89,58 @@ public class JDBCDatabaseManager implements DatabaseManager {
     }
     
     @Override
-    public void update(String tableName, int id, DataSet newvalue) {
-        String format = "%s = ?,";
-        String string = getNamesFormatted(newvalue, format);
-        try (PreparedStatement pst = connection.prepareStatement("UPDATE public." + tableName +
-                " SET " + string + " WHERE id = ?")) {
-            int index = 1;
-            for (Object value : newvalue.getValues()) {
-                pst.setObject(index++, value);
+    public void update(String tableName, DataSet condition, DataSet newvalue) {
+        DataSet columnsTypes = getTableColumns(tableName);
+        String whereString = "";
+        for (String columnName : condition.getNames()) {
+            if (columnsTypes.get(columnName).equals("numeric")) {
+                whereString += columnName + "=" + condition.get(columnName) + " AND ";
+            }else {
+                whereString += columnName + "='" + condition.get(columnName) + "' AND ";
             }
-            pst.setInt(index, id);
-            pst.executeUpdate();
+        }
+        whereString = whereString.substring(0, whereString.length() - 5);
+        
+        String setString = "";
+        for (String columnName : newvalue.getNames()) {
+            if (columnsTypes.get(columnName).equals("numeric")) {
+                setString += columnName + "=" + newvalue.get(columnName) + ", ";
+            }else {
+                setString += columnName + "='" + newvalue.get(columnName) + "', ";
+            }
+        }
+        setString = setString.substring(0, setString.length() - 2);
+        
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate("UPDATE public." + tableName + " SET " + setString + " WHERE " + whereString);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    @Override
+    public void drop(String tableName) {
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate("DROP TABLE public." + tableName);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    @Override
+    public void delete(String tableName, DataSet condition) {
+        DataSet columnsTypes = getTableColumns(tableName);
+        String whereString = "";
+        for (String columnName : condition.getNames()) {
+            if (columnsTypes.get(columnName).equals("numeric")) {
+                whereString += columnName + "=" + condition.get(columnName) + " AND ";
+            }else {
+                whereString += columnName + "='" + condition.get(columnName) + "' AND ";
+            }
+        }
+        whereString = whereString.substring(0, whereString.length() - 5);
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate("DELETE FROM public." + tableName + " WHERE " + whereString);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -144,11 +167,13 @@ public class JDBCDatabaseManager implements DatabaseManager {
     public DataSet getTableColumns(String tableName) {
         DataSet columns = new DataSetImpl();
         try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT column_name FROM information_schema.columns WHERE table_name = '" +
-                     tableName + "'")) {
+             ResultSet rs = stmt.executeQuery("SELECT column_name, data_type FROM information_schema.columns " +
+                     "WHERE table_name = '" + tableName + "'"))
+        {
             while (rs.next()) {
                 String columnName = rs.getString("column_name");
-                columns.put(columnName, columnName.length());
+                String columnType = rs.getString("data_type");
+                columns.put(columnName, columnType);
             }
             return columns;
         } catch (SQLException e) {
@@ -193,12 +218,21 @@ public class JDBCDatabaseManager implements DatabaseManager {
         }
     }
     
-    @Override
-    public void drop(String tableName) {
-        try (Statement stmt = connection.createStatement()) {
-            stmt.executeUpdate("DROP TABLE public." + tableName);
-        } catch (SQLException e) {
-            e.printStackTrace();
+    private String getNamesFormatted(DataSet newvalue, String format) {
+        String string = "";
+        for (String name : newvalue.getNames()) {
+            string += String.format(format, name);
         }
+        string = string.substring(0, string.length() - 1);
+        return string;
+    }
+    
+    private String getValuesFormatted(DataSet input, String format) {
+        String values = "";
+        for (Object value : input.getValues()) {
+            values += String.format(format, value);
+        }
+        values = values.substring(0, values.length() - 1);
+        return values;
     }
 }

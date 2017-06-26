@@ -7,7 +7,7 @@ import java.util.Random;
 /**
  * Created by Александр on 13.05.17.
  */
-public class MainTest {
+public class MainTest { //для подглядывания
     public static void main(String[] args) throws ClassNotFoundException, SQLException {
         // connect to db
         Class.forName("org.postgresql.Driver");

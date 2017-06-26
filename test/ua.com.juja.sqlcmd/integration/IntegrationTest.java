@@ -50,8 +50,8 @@ public class IntegrationTest {
                 "\t\tдля подключения к базе данных, с которой будем работать\r\n" +
                 "\ttables\r\n" +
                 "\t\tдля получения списка всех таблиц базы, к которой подключились\r\n" +
-                "\tcreate|tableName|column1|column2|...|columnN\r\n" +
-                "\t\tдля создания таблицы с указанными полями\r\n" +
+                "\tcreate|tableName|column1|type1|column2|type2|...|columnN|typeN\r\n" +
+                "\t\tдля создания таблицы с полями указанных типов(text или numeric)\r\n" +
                 "\tinsert|tableName|column1|value1|column2|value2|...|columnN|valueN\r\n" +
                 "\t\tдля создания записи в таблице\r\n" +
                 "\tupdate|tableName|column1|value1|column2|value2\r\n" +
@@ -59,8 +59,8 @@ public class IntegrationTest {
                 "значение value2\r\n" +
                 "\tfind|tableName\r\n" +
                 "\t\tдля получения содержимого таблицы\r\n" +
-                "\tdelete|tableName|column|value\r\n" +
-                "\t\tдля удаления записей в таблице - тех записей, в которых column == value\r\n" +
+                "\tdelete|tableName|column1|value1|column2|value2|...|columnN|valueN\r\n" +
+                "\t\tдля удаления записей в таблице - тех записей, в которых columnN == valueN\r\n" +
                 "\tclear|tableName\r\n" +
                 "\t\tдля очистки всей таблицы\r\n" +
                 "\tdrop|tableName\r\n" +
@@ -260,9 +260,9 @@ public class IntegrationTest {
                 "Введи команду (или help для помощи):\r\n" +
                 "Таблица user была успешно очищена.\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
-                "Запись {names: [id, name, password], values: [13, Stiven, *****]} была успешно создана в таблице 'user'.\r\n" +
+                "Запись { id='13', name='Stiven', password='*****' } была успешно создана в таблице 'user'.\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
-                "Запись {names: [id, name, password], values: [14, Eva, +++++]} была успешно создана в таблице 'user'.\r\n" +
+                "Запись { id='14', name='Eva', password='+++++' } была успешно создана в таблице 'user'.\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
                 "┌──────┬────────┬──┐\r\n" +
                 "│ name │password│id│\r\n" +
@@ -307,7 +307,7 @@ public class IntegrationTest {
                 "Введи, пожалуйста имя базы данных, имя пользователя и пароль в формате: connect|database|username|password\r\n" +
                 "Успех!\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
-                "Неудача! по причине: Должно быть четное количество параметров в формате 'insert|tableName|column1|value1|column2|value2|...columnN|valueN', а ты прислал 'insert|user|error'\r\n" +
+                "Неудача! по причине: Должно быть четное количество параметров не менее 4-х  в формате 'insert|tableName|column1|value1|column2|value2|...columnN|valueN', а ты прислал 'insert|user|error'\r\n" +
                 "Повтори попытку!\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
                 "До скорой встречи!\r\n", getData());
@@ -318,7 +318,7 @@ public class IntegrationTest {
         
         in.add("connect|sqlcmd|postgres|postgres");
         in.add("tables");
-        in.add("create|tuser|fname");
+        in.add("create|tuser|fname|text");
         in.add("tables");
         in.add("drop|tuser");
         in.add("tables");
@@ -332,13 +332,273 @@ public class IntegrationTest {
                 "Введи команду (или help для помощи):\r\n" +
                 "[user, test]\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
-                "Таблица 'tuser' с полями {names: [fname], values: [text]} была успешно создана.\r\n" +
+                "Таблица 'tuser' с полями { fname='text' } была успешно создана.\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
                 "[user, test, tuser]\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
                 "Таблица 'tuser' была успешно удалена.\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
                 "[user, test]\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "До скорой встречи!\r\n", getData());
+    }
+    
+    @Test
+    public void testDeleteWithData() {
+        
+        in.add("connect|sqlcmd|postgres|postgres");
+        in.add("clear|user");
+        in.add("insert|user|id|13|name|Stiven|password|*****");
+        in.add("insert|user|id|14|name|Eva|password|+++++");
+        in.add("insert|user|id|15|name|Stiven|password|-----");
+        in.add("find|user");
+        in.add("delete|user|id|13");
+        in.add("find|user");
+        in.add("insert|user|id|13|name|Stiven|password|*****");
+        in.add("find|user");
+        in.add("delete|user|name|Stiven|password|*****");
+        in.add("find|user");
+        in.add("insert|user|id|13|name|Stiven|password|*****");
+        in.add("find|user");
+        in.add("delete|user|name|Stiven");
+        in.add("find|user");
+        in.add("clear|user");
+        in.add("exit");
+        
+        Main.main(new String[0]);
+        
+        assertEquals("Привет юзер!\r\n" +
+                "Введи, пожалуйста имя базы данных, имя пользователя и пароль в формате: connect|database|username|password\r\n" +
+                "Успех!\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Таблица user была успешно очищена.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Запись { id='13', name='Stiven', password='*****' } была успешно создана в таблице 'user'.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Запись { id='14', name='Eva', password='+++++' } была успешно создана в таблице 'user'.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Запись { id='15', name='Stiven', password='-----' } была успешно создана в таблице " + "'user'.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "┌──────┬────────┬──┐\r\n" +
+                "│ name │password│id│\r\n" +
+                "├──────┼────────┼──┤\r\n" +
+                "│Stiven│  ***** │13│\r\n" +
+                "│  Eva │  +++++ │14│\r\n" +
+                "│Stiven│  ----- │15│\r\n" +
+                "└──────┴────────┴──┘\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Записи по условию { id='13' } были успешно удалены в таблице 'user'.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "┌──────┬────────┬──┐\r\n" +
+                "│ name │password│id│\r\n" +
+                "├──────┼────────┼──┤\r\n" +
+                "│  Eva │  +++++ │14│\r\n" +
+                "│Stiven│  ----- │15│\r\n" +
+                "└──────┴────────┴──┘\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Запись { id='13', name='Stiven', password='*****' } была успешно создана в таблице 'user'.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "┌──────┬────────┬──┐\r\n" +
+                "│ name │password│id│\r\n" +
+                "├──────┼────────┼──┤\r\n" +
+                "│  Eva │  +++++ │14│\r\n" +
+                "│Stiven│  ----- │15│\r\n" +
+                "│Stiven│  ***** │13│\r\n" +
+                "└──────┴────────┴──┘\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Записи по условию { name='Stiven', password='*****' } были успешно удалены в таблице 'user'.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "┌──────┬────────┬──┐\r\n" +
+                "│ name │password│id│\r\n" +
+                "├──────┼────────┼──┤\r\n" +
+                "│  Eva │  +++++ │14│\r\n" +
+                "│Stiven│  ----- │15│\r\n" +
+                "└──────┴────────┴──┘\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Запись { id='13', name='Stiven', password='*****' } была успешно создана в таблице 'user'.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "┌──────┬────────┬──┐\r\n" +
+                "│ name │password│id│\r\n" +
+                "├──────┼────────┼──┤\r\n" +
+                "│  Eva │  +++++ │14│\r\n" +
+                "│Stiven│  ----- │15│\r\n" +
+                "│Stiven│  ***** │13│\r\n" +
+                "└──────┴────────┴──┘\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Записи по условию { name='Stiven' } были успешно удалены в таблице 'user'.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "┌────┬────────┬──┐\r\n" +
+                "│name│password│id│\r\n" +
+                "├────┼────────┼──┤\r\n" +
+                "│ Eva│  +++++ │14│\r\n" +
+                "└────┴────────┴──┘\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Таблица user была успешно очищена.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "До скорой встречи!\r\n", getData());
+    }
+    
+    @Test
+    public void testUpdateWithData() {
+        
+        in.add("connect|sqlcmd|postgres|postgres");
+        in.add("clear|user");
+        in.add("insert|user|id|13|name|Stiven|password|*****");
+        in.add("insert|user|id|14|name|Eva|password|+++++");
+        in.add("insert|user|id|15|name|Stiven|password|-----");
+        in.add("find|user");
+        in.add("update|user|id|13|password|^^^^^");
+        in.add("find|user");
+        in.add("update|user|name|Eva|password|*****");
+        in.add("find|user");
+        in.add("update|user|name|Stiven|password|+++++");
+        in.add("find|user");
+        in.add("update|user|id|15|password|^^^^^");
+        in.add("find|user");
+        in.add("clear|user");
+        in.add("exit");
+        
+        Main.main(new String[0]);
+        
+        assertEquals("Привет юзер!\r\n" +
+                "Введи, пожалуйста имя базы данных, имя пользователя и пароль в формате: connect|database|username|password\r\n" +
+                "Успех!\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Таблица user была успешно очищена.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Запись { id='13', name='Stiven', password='*****' } была успешно создана в таблице 'user'.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Запись { id='14', name='Eva', password='+++++' } была успешно создана в таблице 'user'.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Запись { id='15', name='Stiven', password='-----' } была успешно создана в таблице " + "'user'.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "┌──────┬────────┬──┐\r\n" +
+                "│ name │password│id│\r\n" +
+                "├──────┼────────┼──┤\r\n" +
+                "│Stiven│  ***** │13│\r\n" +
+                "│  Eva │  +++++ │14│\r\n" +
+                "│Stiven│  ----- │15│\r\n" +
+                "└──────┴────────┴──┘\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "В таблице 'user' в записях по условию { id='13' } были успешно изменены данные на { password='^^^^^' }.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "┌──────┬────────┬──┐\r\n" +
+                "│ name │password│id│\r\n" +
+                "├──────┼────────┼──┤\r\n" +
+                "│  Eva │  +++++ │14│\r\n" +
+                "│Stiven│  ----- │15│\r\n" +
+                "│Stiven│  ^^^^^ │13│\r\n" +
+                "└──────┴────────┴──┘\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "В таблице 'user' в записях по условию { name='Eva' } были успешно изменены данные на { password='*****' }.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "┌──────┬────────┬──┐\r\n" +
+                "│ name │password│id│\r\n" +
+                "├──────┼────────┼──┤\r\n" +
+                "│Stiven│  ----- │15│\r\n" +
+                "│Stiven│  ^^^^^ │13│\r\n" +
+                "│  Eva │  ***** │14│\r\n" +
+                "└──────┴────────┴──┘\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "В таблице 'user' в записях по условию { name='Stiven' } были успешно изменены данные на { password='+++++' }.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "┌──────┬────────┬──┐\r\n" +
+                "│ name │password│id│\r\n" +
+                "├──────┼────────┼──┤\r\n" +
+                "│  Eva │  ***** │14│\r\n" +
+                "│Stiven│  +++++ │15│\r\n" +
+                "│Stiven│  +++++ │13│\r\n" +
+                "└──────┴────────┴──┘\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "В таблице 'user' в записях по условию { id='15' } были успешно изменены данные на { password='^^^^^' }.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "┌──────┬────────┬──┐\r\n" +
+                "│ name │password│id│\r\n" +
+                "├──────┼────────┼──┤\r\n" +
+                "│  Eva │  ***** │14│\r\n" +
+                "│Stiven│  +++++ │13│\r\n" +
+                "│Stiven│  ^^^^^ │15│\r\n" +
+                "└──────┴────────┴──┘\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Таблица user была успешно очищена.\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "До скорой встречи!\r\n", getData());
+    }
+    
+    @Test
+    public void testCreateWithError() {
+        
+        in.add("connect|sqlcmd|postgres|postgres");
+        in.add("create|tuser|fname");
+        in.add("exit");
+        
+        Main.main(new String[0]);
+        
+        assertEquals("Привет юзер!\r\n" +
+                "Введи, пожалуйста имя базы данных, имя пользователя и пароль в формате: connect|database|username|password\r\n" +
+                "Успех!\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Неудача! по причине: Должно быть четное количество параметров не менее 4-х в формате " +
+                "'create|tableName|column1|type1|column2|type2|...|columnN|typeN', а ты прислал " +
+                "'create|tuser|fname'\r\n" +
+                "Повтори попытку!\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "До скорой встречи!\r\n", getData());
+    }
+    
+    @Test
+    public void testDeleteWithError() {
+        
+        in.add("connect|sqlcmd|postgres|postgres");
+        in.add("delete|tuser|fname");
+        in.add("exit");
+        
+        Main.main(new String[0]);
+        
+        assertEquals("Привет юзер!\r\n" +
+                "Введи, пожалуйста имя базы данных, имя пользователя и пароль в формате: connect|database|username|password\r\n" +
+                "Успех!\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Неудача! по причине: Должно быть четное количество параметров не менее 4-х в формате 'delete|tableName|column1|value1|column2|value2|...columnN|valueN', а ты прислал 'delete|tuser|fname'\r\n" +
+                "Повтори попытку!\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "До скорой встречи!\r\n", getData());
+    }
+    
+    @Test
+    public void testDropWithError() {
+        
+        in.add("connect|sqlcmd|postgres|postgres");
+        in.add("drop|tuser|fname");
+        in.add("exit");
+        
+        Main.main(new String[0]);
+        
+        assertEquals("Привет юзер!\r\n" +
+                "Введи, пожалуйста имя базы данных, имя пользователя и пароль в формате: connect|database|username|password\r\n" +
+                "Успех!\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Неудача! по причине: Должно быть всего 2 параметра в формате 'drop|tableName', а ты прислал 'drop|tuser|fname'\r\n" +
+                "Повтори попытку!\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "До скорой встречи!\r\n", getData());
+    }
+    
+    @Test
+    public void testUpdateWithError() {
+        
+        in.add("connect|sqlcmd|postgres|postgres");
+        in.add("update|user|fname");
+        in.add("exit");
+        
+        Main.main(new String[0]);
+        
+        assertEquals("Привет юзер!\r\n" +
+                "Введи, пожалуйста имя базы данных, имя пользователя и пароль в формате: connect|database|username|password\r\n" +
+                "Успех!\r\n" +
+                "Введи команду (или help для помощи):\r\n" +
+                "Неудача! по причине: Должно быть 6 параметров в формате 'update|tableName|column1|value1|column2|value2', а ты прислал 'update|user|fname'\r\n" +
+                "Повтори попытку!\r\n" +
                 "Введи команду (или help для помощи):\r\n" +
                 "До скорой встречи!\r\n", getData());
     }

@@ -27,8 +27,8 @@ public class Help implements Command {
         view.write("\ttables");
         view.write("\t\tдля получения списка всех таблиц базы, к которой подключились");
     
-        view.write("\tcreate|tableName|column1|column2|...|columnN");
-        view.write("\t\tдля создания таблицы с указанными полями");
+        view.write("\tcreate|tableName|column1|type1|column2|type2|...|columnN|typeN");
+        view.write("\t\tдля создания таблицы с полями указанных типов(text или numeric)");
     
         view.write("\tinsert|tableName|column1|value1|column2|value2|...|columnN|valueN");
         view.write("\t\tдля создания записи в таблице");
@@ -41,9 +41,8 @@ public class Help implements Command {
         view.write("\tfind|tableName");
         view.write("\t\tдля получения содержимого таблицы");
         
-        //TODO delete
-        view.write("\tdelete|tableName|column|value");
-        view.write("\t\tдля удаления записей в таблице - тех записей, в которых column == value");
+        view.write("\tdelete|tableName|column1|value1|column2|value2|...|columnN|valueN");
+        view.write("\t\tдля удаления записей в таблице - тех записей, в которых columnN == valueN");
         
         view.write("\tclear|tableName");
         view.write("\t\tдля очистки всей таблицы");

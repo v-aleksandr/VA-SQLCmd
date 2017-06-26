@@ -23,7 +23,9 @@ public class Main {
                 new Create(manager, view),
                 new Clear(manager, view),
                 new Insert(manager, view),
+                new Update(manager, view),
                 new Find(manager, view),
+                new Delete(manager, view),
                 new Drop(manager, view),
                 new Unsupported(view)});
         controller.run();

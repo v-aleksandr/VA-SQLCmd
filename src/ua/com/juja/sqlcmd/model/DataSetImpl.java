@@ -11,10 +11,17 @@ public class DataSetImpl implements DataSet {
     
     @Override
     public String toString() {
-        return "{" +
-                "names: " + getNames().toString() + ", " +
-                "values: " + getValues().toString() +
-                "}";
+        String result = "{ ";
+        for (String columnName : getNames()) {
+            result += columnName + "='" + get(columnName).toString() + "', ";
+        }
+        result = result.substring(0, result.length() - 2) + " }";
+        return result;
+//It was almost unreadable output
+//        return "{" +
+//                "names: " + getNames().toString() + ", " +
+//                "values: " + getValues().toString() +
+//                "}";
     }
     
     @Override

@@ -19,6 +19,11 @@ public class InMemoryDatabaseManager implements DatabaseManager {
         tables.remove(tableName);
     }
     
+    @Override
+    public void delete(String tableName, DataSet input) {
+        //TODO
+    }
+    
     private void validateTable(String tableName) {
         if(!"user".equals(tableName)) {
             throw new UnsupportedOperationException("Only for 'user' table, but you try to work with:" + tableName);
@@ -63,16 +68,18 @@ public class InMemoryDatabaseManager implements DatabaseManager {
 //        get(tableName).add(dataSet);
         get(tableName).add(input);
     }
-
+    
     @Override
-    public void update(String tableName, int id, DataSet newvalue) {
-        for (DataSet dataSet : get(tableName)) {
-            if ((int) dataSet.get("id") == id) {
-                dataSet.updateFrom(newvalue);
+    public void update(String tableName, DataSet condition, DataSet newvalue) {
+        for (String columnName : condition.getNames()) {
+            for (DataSet dataSet : get(tableName)) {
+                if (dataSet.get(columnName).equals(condition.get(columnName))) {
+                    dataSet.updateFrom(newvalue);
+                }
             }
         }
     }
-
+    
     @Override
     public DataSet getTableColumns(String tableName) {
         DataSet dataSet = new DataSetImpl();
