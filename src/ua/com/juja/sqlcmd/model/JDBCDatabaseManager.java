@@ -67,7 +67,6 @@ public class JDBCDatabaseManager implements DatabaseManager {
         columnsList = columnsList.substring(0, columnsList.length() - 2);
         
         try (Statement stmt = connection.createStatement()) {
-//            Also we can create table without setting ownership
 //            stmt.executeUpdate("CREATE TABLE public." + tableName + " ( " + string + " ) WITH ( OIDS=FALSE )");
             stmt.executeUpdate("CREATE TABLE public." + tableName + " ( " + columnsList + " ) WITH ( OIDS=FALSE );" +
                     "ALTER TABLE public." + tableName + " OWNER TO " + logonName);
