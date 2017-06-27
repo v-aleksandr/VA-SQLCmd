@@ -1,13 +1,10 @@
 package ua.com.juja.sqlcmd.integration;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import ua.com.juja.sqlcmd.controller.Main;
-import ua.com.juja.sqlcmd.controller.command.Connect;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
@@ -30,11 +27,6 @@ public class IntegrationTest {
         System.setOut(new PrintStream(out));
     }
 
-//    @Before
-//    public void clearIn() throws IOException {
-//        in.reset();
-//    }
-    
     @Test
     public void testHelp() {
         
@@ -76,7 +68,6 @@ public class IntegrationTest {
     public String getData() {
         try {
             String result = new String(out.toByteArray(), "UTF-8");
-//            out.reset();
             return result;
         } catch (UnsupportedEncodingException e) {
             return e.getMessage();
@@ -226,10 +217,6 @@ public class IntegrationTest {
     public void testConnectWithError() {
         
         in.add("connect|sqlcmd|");
-//        in.add("connect|sqlcmd|postgres|postgres");
-//        in.add("tables");
-//        in.add("connect|test|postgres|postgres");
-//        in.add("tables");
         in.add("exit");
         
         Main.main(new String[0]);
